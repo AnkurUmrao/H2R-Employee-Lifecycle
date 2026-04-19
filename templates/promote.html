@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Promote / Transfer — {{ emp.full_name }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>🚀 Promotion / Transfer</h1>
+  <p class="page-subtitle">PA40 — Personnel Actions | Action: Promotion / Transfer</p>
+</div>
+<div class="card" style="max-width:600px">
+  <div class="card-header">Employee: {{ emp.full_name }} ({{ emp.emp_id }})</div>
+  <div class="form-info-box">
+    Current: <strong>{{ emp.designation }}</strong> in <strong>{{ emp.department }}</strong> | Salary: ₹{{ "{:,.0f}".format(emp.basic_salary) }}/month
+  </div>
+  <form method="POST">
+    <div class="form-group">
+      <label>Action Type *</label>
+      <select name="action_type" required>
+        <option>Promotion</option>
+        <option>Transfer</option>
+        <option>Demotion</option>
+        <option>Lateral Move</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>New Designation *</label>
+      <input type="text" name="designation" value="{{ emp.designation }}" required>
+    </div>
+    <div class="form-group">
+      <label>New Department *</label>
+      <select name="department" required>
+        {% for d in ['IT','Human Resources','Finance','Marketing','Operations','Sales','Legal','Administration'] %}
+        <option value="{{ d }}" {% if d == emp.department %}selected{% endif %}>{{ d }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>New Basic Salary (₹) *</label>
+      <input type="number" name="basic_salary" value="{{ emp.basic_salary }}" required min="10000" step="500">
+    </div>
+    <div class="form-group">
+      <label>Effective Date *</label>
+      <input type="date" name="effective_date" required>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">✅ Process Action</button>
+      <a href="{{ url_for('employee_detail', emp_id=emp.emp_id) }}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

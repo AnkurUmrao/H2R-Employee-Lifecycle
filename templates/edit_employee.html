@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Edit Employee — PA30{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>✏️ Edit Employee</h1>
+  <p class="page-subtitle">PA30 — Maintain HR Master Data | {{ emp.emp_id }}</p>
+</div>
+<div class="card">
+  <div class="card-header">Update Employee Information</div>
+  <form method="POST">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" value="{{ emp.email }}" required>
+      </div>
+      <div class="form-group">
+        <label>Phone</label>
+        <input type="tel" name="phone" value="{{ emp.phone }}" required>
+      </div>
+      <div class="form-group">
+        <label>Designation</label>
+        <input type="text" name="designation" value="{{ emp.designation }}" required>
+      </div>
+      <div class="form-group">
+        <label>Department</label>
+        <select name="department" required>
+          {% for d in ['IT','Human Resources','Finance','Marketing','Operations','Sales','Legal','Administration'] %}
+          <option value="{{ d }}" {% if d == emp.department %}selected{% endif %}>{{ d }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Location</label>
+        <select name="location" required>
+          {% for loc in ['Bengaluru','Mumbai','Delhi','Pune','Hyderabad','Chennai','Ahmedabad','Kolkata','Remote'] %}
+          <option value="{{ loc }}" {% if loc == emp.location %}selected{% endif %}>{{ loc }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Basic Salary (₹)</label>
+        <input type="number" name="basic_salary" value="{{ emp.basic_salary }}" required min="10000" step="500">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+      <a href="{{ url_for('employee_detail', emp_id=emp.emp_id) }}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

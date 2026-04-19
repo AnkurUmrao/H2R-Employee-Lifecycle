@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Hire Employee — PA40{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>➕ Hire Employee</h1>
+  <p class="page-subtitle">PA40 — Personnel Actions | Action Type: Hiring</p>
+</div>
+
+<div class="card">
+  <div class="card-header">📋 New Employee Hiring Form</div>
+  <form method="POST" action="{{ url_for('hire') }}">
+
+    <div class="form-section-title">👤 Personal Data (IT0002)</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>First Name *</label>
+        <input type="text" name="first_name" required placeholder="e.g. Arjun">
+      </div>
+      <div class="form-group">
+        <label>Last Name *</label>
+        <input type="text" name="last_name" required placeholder="e.g. Sharma">
+      </div>
+      <div class="form-group">
+        <label>Email Address *</label>
+        <input type="email" name="email" required placeholder="arjun@company.in">
+      </div>
+      <div class="form-group">
+        <label>Phone Number *</label>
+        <input type="tel" name="phone" required placeholder="9876543210">
+      </div>
+      <div class="form-group">
+        <label>Gender *</label>
+        <select name="gender" required>
+          <option value="">-- Select --</option>
+          <option>Male</option>
+          <option>Female</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Date of Birth *</label>
+        <input type="date" name="dob" required>
+      </div>
+    </div>
+
+    <div class="form-section-title">🏢 Organisational Assignment (IT0001)</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Designation / Job Title *</label>
+        <input type="text" name="designation" required placeholder="e.g. Senior Analyst">
+      </div>
+      <div class="form-group">
+        <label>Department *</label>
+        <select name="department" required>
+          <option value="">-- Select --</option>
+          <option>IT</option>
+          <option>Human Resources</option>
+          <option>Finance</option>
+          <option>Marketing</option>
+          <option>Operations</option>
+          <option>Sales</option>
+          <option>Legal</option>
+          <option>Administration</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Cost Center *</label>
+        <input type="text" name="cost_center" required placeholder="CC-IT-001">
+      </div>
+      <div class="form-group">
+        <label>Employment Type *</label>
+        <select name="employment_type" required>
+          <option value="">-- Select --</option>
+          <option>Permanent</option>
+          <option>Contract</option>
+          <option>Trainee</option>
+          <option>Part-Time</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Work Location *</label>
+        <select name="location" required>
+          <option value="">-- Select --</option>
+          <option>Bengaluru</option>
+          <option>Mumbai</option>
+          <option>Delhi</option>
+          <option>Pune</option>
+          <option>Hyderabad</option>
+          <option>Chennai</option>
+          <option>Ahmedabad</option>
+          <option>Kolkata</option>
+          <option>Remote</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Reporting Manager</label>
+        <select name="manager">
+          <option value="">-- None / Self --</option>
+          {% for m in managers %}
+          <option value="{{ m.emp_id }}">{{ m.full_name }} ({{ m.designation }})</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="form-section-title">💰 Basic Pay (IT0008)</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Date of Joining *</label>
+        <input type="date" name="hire_date" required>
+      </div>
+      <div class="form-group">
+        <label>Basic Salary (₹/month) *</label>
+        <input type="number" name="basic_salary" required min="10000" step="500" placeholder="50000">
+      </div>
+    </div>
+
+    <div class="form-info-box">
+      ℹ️ HRA will be auto-calculated at <strong>40%</strong> of Basic. TA fixed at <strong>₹1,600</strong>. Special Allowance at <strong>10%</strong> of Basic.
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">✅ Process Hiring Action</button>
+      <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

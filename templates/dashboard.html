@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — SAP H2R Portal{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>📊 HR Dashboard</h1>
+  <p class="page-subtitle">Hire-to-Retire Employee Lifecycle Overview</p>
+</div>
+
+<!-- KPI Cards -->
+<div class="kpi-grid">
+  <div class="kpi-card kpi-blue">
+    <div class="kpi-icon">👥</div>
+    <div class="kpi-value">{{ stats.total_employees }}</div>
+    <div class="kpi-label">Total Employees</div>
+  </div>
+  <div class="kpi-card kpi-green">
+    <div class="kpi-icon">✅</div>
+    <div class="kpi-value">{{ stats.active }}</div>
+    <div class="kpi-label">Active Employees</div>
+  </div>
+  <div class="kpi-card kpi-orange">
+    <div class="kpi-icon">🏢</div>
+    <div class="kpi-value">{{ stats.departments }}</div>
+    <div class="kpi-label">Departments</div>
+  </div>
+  <div class="kpi-card kpi-purple">
+    <div class="kpi-icon">💰</div>
+    <div class="kpi-value">₹{{ "{:,.0f}".format(stats.total_payroll) }}</div>
+    <div class="kpi-label">Monthly Payroll Est.</div>
+  </div>
+</div>
+
+<!-- H2R Lifecycle Flow -->
+<div class="card mt-4">
+  <div class="card-header">🔄 H2R Lifecycle Flow (SAP HR End-to-End)</div>
+  <div class="lifecycle-flow">
+    <div class="lf-step">
+      <div class="lf-icon">📋</div>
+      <div class="lf-title">Hiring</div>
+      <div class="lf-sub">PA40 Action</div>
+    </div>
+    <div class="lf-arrow">→</div>
+    <div class="lf-step">
+      <div class="lf-icon">🏠</div>
+      <div class="lf-title">Onboarding</div>
+      <div class="lf-sub">PA30 Master Data</div>
+    </div>
+    <div class="lf-arrow">→</div>
+    <div class="lf-step">
+      <div class="lf-icon">📅</div>
+      <div class="lf-title">Time Mgmt</div>
+      <div class="lf-sub">IT2001 Absences</div>
+    </div>
+    <div class="lf-arrow">→</div>
+    <div class="lf-step">
+      <div class="lf-icon">💰</div>
+      <div class="lf-title">Payroll</div>
+      <div class="lf-sub">PC00 Driver</div>
+    </div>
+    <div class="lf-arrow">→</div>
+    <div class="lf-step">
+      <div class="lf-icon">🎓</div>
+      <div class="lf-title">Training</div>
+      <div class="lf-sub">LSO Module</div>
+    </div>
+    <div class="lf-arrow">→</div>
+    <div class="lf-step">
+      <div class="lf-icon">🚀</div>
+      <div class="lf-title">Promotion</div>
+      <div class="lf-sub">PA40 Transfer</div>
+    </div>
+    <div class="lf-arrow">→</div>
+    <div class="lf-step lf-end">
+      <div class="lf-icon">🏁</div>
+      <div class="lf-title">Separation</div>
+      <div class="lf-sub">IT0000 Leaving</div>
+    </div>
+  </div>
+</div>
+
+<!-- Department Distribution + Recent Hires -->
+<div class="two-col mt-4">
+  <div class="card">
+    <div class="card-header">🏢 Department Distribution</div>
+    {% if stats.dept_distribution %}
+      {% for dept, count in stats.dept_distribution.items() %}
+      <div class="dept-row">
+        <span class="dept-name">{{ dept }}</span>
+        <div class="dept-bar-wrap">
+          <div class="dept-bar" style="width:{{ (count / stats.active * 100)|int }}%"></div>
+        </div>
+        <span class="dept-count">{{ count }}</span>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p class="empty-msg">No employees yet. <a href="{{ url_for('hire') }}">Hire your first employee →</a></p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-header">🆕 Recent Hires</div>
+    {% if recent %}
+    <table class="table">
+      <thead><tr><th>ID</th><th>Name</th><th>Dept</th><th>Joined</th></tr></thead>
+      <tbody>
+        {% for e in recent %}
+        <tr>
+          <td><a href="{{ url_for('employee_detail', emp_id=e.emp_id) }}" class="emp-link">{{ e.emp_id }}</a></td>
+          <td>{{ e.full_name }}</td>
+          <td><span class="badge badge-dept">{{ e.department }}</span></td>
+          <td>{{ e.hire_date }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+      <p class="empty-msg">No employees yet. <a href="{{ url_for('hire') }}">Start hiring →</a></p>
+    {% endif %}
+  </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="card mt-4">
+  <div class="card-header">⚡ Quick Actions</div>
+  <div class="quick-actions">
+    <a href="{{ url_for('hire') }}"         class="qa-btn qa-green">➕ Hire Employee</a>
+    <a href="{{ url_for('payroll') }}"      class="qa-btn qa-blue">💰 Process Payroll</a>
+    <a href="{{ url_for('leave') }}"        class="qa-btn qa-orange">📅 Record Leave</a>
+    <a href="{{ url_for('training') }}"     class="qa-btn qa-purple">🎓 Add Training</a>
+    <a href="{{ url_for('employee_list') }}" class="qa-btn qa-grey">👥 View All Employees</a>
+  </div>
+</div>
+{% endblock %}

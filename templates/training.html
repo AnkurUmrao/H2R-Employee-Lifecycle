@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Training & Development{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>🎓 Training & Development</h1>
+  <p class="page-subtitle">LSO — Learning Solution | Training Events Management</p>
+</div>
+<div class="card" style="max-width:600px">
+  <div class="card-header">Enroll Employee in Training</div>
+  <form method="POST">
+    <div class="form-group">
+      <label>Employee *</label>
+      <select name="emp_id" required>
+        <option value="">-- Select Employee --</option>
+        {% for emp in employees %}
+        <option value="{{ emp.emp_id }}">{{ emp.emp_id }} — {{ emp.full_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Course / Program Name *</label>
+      <input type="text" name="course" required placeholder="e.g. SAP ABAP Fundamentals">
+    </div>
+    <div class="form-group">
+      <label>Training Provider *</label>
+      <input type="text" name="provider" required placeholder="e.g. SAP SE / NIIT / Internal">
+    </div>
+    <div class="form-grid two-col-grid">
+      <div class="form-group">
+        <label>Start Date *</label>
+        <input type="date" name="start_date" required>
+      </div>
+      <div class="form-group">
+        <label>End Date *</label>
+        <input type="date" name="end_date" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Status *</label>
+      <select name="status" required>
+        <option>Enrolled</option>
+        <option>In Progress</option>
+        <option>Completed</option>
+        <option>Cancelled</option>
+      </select>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">🎓 Add Training Record</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

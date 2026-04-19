@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}{{ emp.full_name }} — Employee Profile{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>👤 {{ emp.full_name }}</h1>
+  <p class="page-subtitle">Employee ID: {{ emp.emp_id }} | {{ emp.designation }} | {{ emp.department }}</p>
+</div>
+
+<!-- Profile Header -->
+<div class="card emp-profile-header">
+  <div class="emp-avatar">{{ emp.first_name[0] }}{{ emp.last_name[0] }}</div>
+  <div class="emp-profile-info">
+    <h2>{{ emp.full_name }}</h2>
+    <p>{{ emp.designation }} — {{ emp.department }}</p>
+    <p>📍 {{ emp.location }} | 📞 {{ emp.phone }} | ✉️ {{ emp.email }}</p>
+  </div>
+  <div class="emp-profile-actions">
+    {% if emp.status == 'Active' %}
+      <span class="badge badge-active badge-lg">● Active</span>
+      <a href="{{ url_for('edit_employee', emp_id=emp.emp_id) }}" class="btn btn-primary btn-sm">✏️ Edit</a>
+      <a href="{{ url_for('promote', emp_id=emp.emp_id) }}"       class="btn btn-blue btn-sm">🚀 Promote/Transfer</a>
+      <a href="{{ url_for('separate', emp_id=emp.emp_id) }}"      class="btn btn-danger btn-sm">🏁 Separate</a>
+    {% else %}
+      <span class="badge badge-inactive badge-lg">● Inactive</span>
+    {% endif %}
+  </div>
+</div>
+
+<div class="two-col mt-4">
+  <!-- Personal & Org Details -->
+  <div class="card">
+    <div class="card-header">🏢 Organisational Assignment (IT0001)</div>
+    <table class="detail-table">
+      <tr><td>Employee ID</td><td><strong>{{ emp.emp_id }}</strong></td></tr>
+      <tr><td>Designation</td><td>{{ emp.designation }}</td></tr>
+      <tr><td>Department</td><td>{{ emp.department }}</td></tr>
+      <tr><td>Cost Center</td><td>{{ emp.cost_center }}</td></tr>
+      <tr><td>Employment Type</td><td>{{ emp.employment_type }}</td></tr>
+      <tr><td>Location</td><td>{{ emp.location }}</td></tr>
+      <tr><td>Date of Joining</td><td>{{ emp.hire_date }}</td></tr>
+      <tr><td>Status</td><td>{{ emp.status }}</td></tr>
+      {% if emp.get('separation_date') %}
+      <tr><td>Last Working Day</td><td>{{ emp.last_working_day }}</td></tr>
+      <tr><td>Separation Reason</td><td>{{ emp.separation_reason }}</td></tr>
+      {% endif %}
+    </table>
+  </div>
+
+  <!-- Pay Details -->
+  <div class="card">
+    <div class="card-header">💰 Basic Pay (IT0008)</div>
+    {% set basic = emp.basic_salary %}
+    {% set hra   = basic * 0.40 %}
+    {% set ta    = emp.ta_fixed %}
+    {% set spec  = basic * 0.10 %}
+    {% set gross = basic + hra + ta + spec %}
+    <table class="detail-table">
+      <tr><td>Basic Salary</td><td>₹{{ "{:,.2f}".format(basic) }}</td></tr>
+      <tr><td>HRA (40%)</td><td>₹{{ "{:,.2f}".format(hra) }}</td></tr>
+      <tr><td>Transport Allow.</td><td>₹{{ "{:,.2f}".format(ta) }}</td></tr>
+      <tr><td>Special Allow. (10%)</td><td>₹{{ "{:,.2f}".format(spec) }}</td></tr>
+      <tr class="highlight-row"><td><strong>Gross CTC</strong></td><td><strong>₹{{ "{:,.2f}".format(gross) }}</strong></td></tr>
+    </table>
+    <a href="{{ url_for('payroll') }}" class="btn btn-primary btn-sm mt-2">💰 Process Payroll</a>
+  </div>
+</div>
+
+<!-- Payroll History -->
+<div class="card mt-4">
+  <div class="card-header">📜 Payroll History</div>
+  {% if payroll_hist %}
+  <table class="table table-striped">
+    <thead><tr><th>Payslip ID</th><th>Period</th><th>Gross</th><th>Deductions</th><th>Net Pay</th><th>Processed On</th></tr></thead>
+    <tbody>
+      {% for p in payroll_hist|reverse %}
+      <tr>
+        <td><code>{{ p.payslip_id }}</code></td>
+        <td>{{ p.period }}</td>
+        <td>₹{{ "{:,.2f}".format(p.gross) }}</td>
+        <td class="text-red">- ₹{{ "{:,.2f}".format(p.total_deductions) }}</td>
+        <td class="text-green"><strong>₹{{ "{:,.2f}".format(p.net_pay) }}</strong></td>
+        <td>{{ p.processed_on }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="empty-msg">No payroll records yet. <a href="{{ url_for('payroll') }}">Process Payroll →</a></p>
+  {% endif %}
+</div>
+
+<!-- Leave Records -->
+<div class="card mt-4">
+  <div class="card-header">📅 Leave Records (IT2001 — Absences)</div>
+  {% if emp.leaves %}
+  <table class="table">
+    <thead><tr><th>Leave ID</th><th>Type</th><th>From</th><th>To</th><th>Days</th><th>Reason</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for l in emp.leaves %}
+      <tr>
+        <td><code>{{ l.leave_id }}</code></td>
+        <td>{{ l.leave_type }}</td>
+        <td>{{ l.start_date }}</td>
+        <td>{{ l.end_date }}</td>
+        <td>{{ l.days }}</td>
+        <td>{{ l.reason }}</td>
+        <td><span class="badge badge-active">{{ l.status }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="empty-msg">No leave records. <a href="{{ url_for('leave') }}">Record Leave →</a></p>
+  {% endif %}
+</div>
+
+<!-- Training -->
+<div class="card mt-4">
+  <div class="card-header">🎓 Training & Development (LSO)</div>
+  {% if emp.trainings %}
+  <table class="table">
+    <thead><tr><th>ID</th><th>Course</th><th>Provider</th><th>From</th><th>To</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for t in emp.trainings %}
+      <tr>
+        <td><code>{{ t.training_id }}</code></td>
+        <td>{{ t.course }}</td>
+        <td>{{ t.provider }}</td>
+        <td>{{ t.start_date }}</td>
+        <td>{{ t.end_date }}</td>
+        <td><span class="badge {% if t.status=='Completed' %}badge-active{% else %}badge-dept{% endif %}">{{ t.status }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p class="empty-msg">No training records. <a href="{{ url_for('training') }}">Add Training →</a></p>
+  {% endif %}
+</div>
+
+<!-- Actions Log -->
+<div class="card mt-4">
+  <div class="card-header">📋 Actions Log (IT0000 — Actions)</div>
+  <div class="timeline">
+    {% for action in emp.actions_log|reverse %}
+    <div class="timeline-item">
+      <div class="timeline-dot"></div>
+      <div class="timeline-content">
+        <strong>{{ action.action }}</strong> — {{ action.date }}
+        <p>{{ action.detail }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Payroll Processing{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>💰 Payroll Processing</h1>
+  <p class="page-subtitle">PC00_M99_CALC — Payroll Driver | Indian Statutory Calculations</p>
+</div>
+
+<div class="two-col">
+  <div class="card">
+    <div class="card-header">Run Payroll for Employee</div>
+    <form method="POST">
+      <div class="form-group">
+        <label>Select Employee *</label>
+        <select name="emp_id" required>
+          <option value="">-- Select Active Employee --</option>
+          {% for emp in employees %}
+          <option value="{{ emp.emp_id }}">{{ emp.emp_id }} — {{ emp.full_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-grid two-col-grid">
+        <div class="form-group">
+          <label>Month *</label>
+          <select name="month" required>
+            {% for m in range(1,13) %}
+            <option value="{{ m }}">{{ ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][m-1] }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Year *</label>
+          <select name="year" required>
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">▶ Process Payroll</button>
+    </form>
+  </div>
+
+  {% if result %}
+  <div class="card payslip-card">
+    <div class="payslip-header">
+      <div>
+        <strong>TechCorp India Ltd.</strong>
+        <p>Payslip for {{ result.period }}</p>
+      </div>
+      <div class="text-right">
+        <p>ID: <code>{{ result.payslip_id }}</code></p>
+        <p>{{ result.emp_id }}</p>
+      </div>
+    </div>
+    <div class="payslip-emp">
+      <strong>{{ result.emp_name }}</strong> | {{ result.designation }}, {{ result.department }}
+    </div>
+    <div class="payslip-body">
+      <div>
+        <p class="payslip-section-title">EARNINGS</p>
+        <table class="payslip-table">
+          <tr><td>Basic Salary</td><td>₹{{ "{:,.2f}".format(result.basic) }}</td></tr>
+          <tr><td>HRA</td><td>₹{{ "{:,.2f}".format(result.hra) }}</td></tr>
+          <tr><td>Transport Allow.</td><td>₹{{ "{:,.2f}".format(result.ta) }}</td></tr>
+          <tr><td>Special Allow.</td><td>₹{{ "{:,.2f}".format(result.special_all) }}</td></tr>
+          <tr class="total-row"><td><strong>Gross Pay</strong></td><td><strong>₹{{ "{:,.2f}".format(result.gross) }}</strong></td></tr>
+        </table>
+      </div>
+      <div>
+        <p class="payslip-section-title">DEDUCTIONS</p>
+        <table class="payslip-table">
+          <tr><td>PF (12%)</td><td>₹{{ "{:,.2f}".format(result.pf) }}</td></tr>
+          <tr><td>ESI</td><td>₹{{ "{:,.2f}".format(result.esi) }}</td></tr>
+          <tr><td>Professional Tax</td><td>₹{{ "{:,.2f}".format(result.pt) }}</td></tr>
+          <tr><td>TDS</td><td>₹{{ "{:,.2f}".format(result.tds) }}</td></tr>
+          <tr class="total-row"><td><strong>Total Deductions</strong></td><td><strong>₹{{ "{:,.2f}".format(result.total_deductions) }}</strong></td></tr>
+        </table>
+      </div>
+    </div>
+    <div class="payslip-net">
+      <span>NET PAY</span>
+      <span class="net-amount">₹{{ "{:,.2f}".format(result.net_pay) }}</span>
+    </div>
+  </div>
+  {% else %}
+  <div class="card">
+    <div class="card-header">ℹ️ Payroll Components</div>
+    <table class="detail-table">
+      <tr><td>Basic Salary</td><td>As per IT0008</td></tr>
+      <tr><td>HRA</td><td>40% of Basic</td></tr>
+      <tr><td>Transport Allow.</td><td>₹1,600 (fixed)</td></tr>
+      <tr><td>Special Allow.</td><td>10% of Basic</td></tr>
+      <tr><td>PF Deduction</td><td>12% of Basic</td></tr>
+      <tr><td>ESI</td><td>0.75% (if Gross ≤ ₹21,000)</td></tr>
+      <tr><td>Professional Tax</td><td>₹200 (flat)</td></tr>
+      <tr><td>TDS</td><td>Simplified slab calculation</td></tr>
+    </table>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

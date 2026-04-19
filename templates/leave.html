@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Leave Management{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1>📅 Leave Management</h1>
+  <p class="page-subtitle">IT2001 — Absences | Time Management</p>
+</div>
+<div class="card" style="max-width:600px">
+  <div class="card-header">Record Employee Leave</div>
+  <form method="POST">
+    <div class="form-group">
+      <label>Employee *</label>
+      <select name="emp_id" required>
+        <option value="">-- Select Employee --</option>
+        {% for emp in employees %}
+        <option value="{{ emp.emp_id }}">{{ emp.emp_id }} — {{ emp.full_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Leave Type *</label>
+      <select name="leave_type" required>
+        <option value="">-- Select --</option>
+        <option>Annual Leave</option>
+        <option>Sick Leave</option>
+        <option>Casual Leave</option>
+        <option>Maternity Leave</option>
+        <option>Paternity Leave</option>
+        <option>Compensatory Off</option>
+        <option>Loss of Pay</option>
+      </select>
+    </div>
+    <div class="form-grid two-col-grid">
+      <div class="form-group">
+        <label>From Date *</label>
+        <input type="date" name="start_date" required>
+      </div>
+      <div class="form-group">
+        <label>To Date *</label>
+        <input type="date" name="end_date" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Reason</label>
+      <textarea name="reason" rows="2" placeholder="Brief reason for leave..."></textarea>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">📅 Record Leave</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
